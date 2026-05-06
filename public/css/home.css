@@ -1,0 +1,109 @@
+/* Home Page Standard CSS */
+.hero-section {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 0 1.5rem;
+    position: relative;
+    background-color: #1a4731; /* Color de respaldo */
+    background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1500');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Efecto parallax suave */
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+    .hero-title { font-size: 5.5rem; }
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    color: #f3f4f6;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-outline {
+    display: inline-block;
+    background-color: transparent;
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: white;
+    color: #1a4731;
+}
+
+.features-section {
+    padding: 8rem 1.5rem;
+    background-color: white;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-cols: repeat(1, 1fr);
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .feature-grid { grid-template-cols: repeat(3, 1fr); }
+}
+
+.feature-item {
+    text-align: center;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.feature-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a4731;
+    margin-bottom: 1rem;
+}
+
+.feature-desc {
+    color: #6b7280;
+    line-height: 1.7;
+    font-size: 1.1rem;
+}

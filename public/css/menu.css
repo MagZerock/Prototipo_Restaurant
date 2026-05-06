@@ -1,0 +1,123 @@
+/* Menu Page Standard CSS */
+.menu-section {
+    padding: 6rem 1.5rem;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.menu-title {
+    font-size: 3rem;
+    font-weight: 800;
+    text-align: center;
+    color: #1a4731;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.menu-subtitle {
+    text-align: center;
+    color: #9ca3af;
+    margin-bottom: 5rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    font-style: italic;
+}
+
+.dish-grid {
+    display: grid;
+    grid-template-cols: repeat(1, 1fr);
+    gap: 3rem;
+}
+
+@media (min-width: 768px) {
+    .dish-grid { grid-template-cols: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    .dish-grid { grid-template-cols: repeat(4, 1fr); }
+}
+
+.dish-card {
+    background-color: white;
+    border-radius: 2rem;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+    border: 1px solid #f3f4f6;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+}
+
+.dish-card:hover {
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+    transform: translateY(-10px);
+}
+
+.dish-image-wrapper {
+    height: 250px;
+    overflow: hidden;
+}
+
+.dish-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.dish-card:hover .dish-image {
+    transform: scale(1.1) rotate(2deg);
+}
+
+.dish-info {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.dish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dish-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.dish-price {
+    color: #1a4731;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.dish-desc {
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.btn-add-cart {
+    width: 100%;
+    background-color: #1a4731;
+    color: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-add-cart:hover {
+    background-color: #112d1f;
+    box-shadow: 0 10px 15px rgba(26,71,49,0.3);
+}

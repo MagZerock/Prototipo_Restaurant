@@ -1,0 +1,165 @@
+/* Global Styles - Biconoir Standard CSS */
+body { 
+    font-family: 'Outfit', sans-serif; 
+    background-color: #f9fafb;
+    margin: 0;
+    color: #1f2937;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-header {
+    background-color: #1a4731;
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-menu {
+    display: none; /* Mobile hidden by default in this simple logic */
+}
+
+@media (min-width: 768px) {
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: #86efac;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -0.5rem;
+    right: -1rem;
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.625rem;
+    border-radius: 9999px;
+    height: 1rem;
+    width: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+.main-footer {
+    background-color: #111827;
+    color: #9ca3af;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.footer-link {
+    color: #9ca3af;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: white;
+}
+
+/* User Account Button & Dropdown */
+.user-account {
+    position: relative;
+    margin-left: 1rem;
+}
+
+.user-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #112d1f;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 1px solid #1a4731;
+    cursor: pointer;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 14rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 0.75rem 0;
+    z-index: 2000;
+    border: 1px solid #f3f4f6;
+}
+
+.user-account:hover .user-dropdown {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 0.5rem;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 0.75rem 1.25rem;
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #f9fafb;
+}
+
+/* Reusable Components */
+.btn-primary {
+    display: inline-block;
+    background-color: #1a4731;
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
