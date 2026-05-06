@@ -1,9 +1,7 @@
 <?php
 session_start();
 
-// Front Controller - Entry Point
 spl_autoload_register(function ($class) {
-    // Convert App\Controllers\MenuController to ../app/Controllers/MenuController.php
     $prefix = 'App\\';
     $base_dir = __DIR__ . '/../app/';
 

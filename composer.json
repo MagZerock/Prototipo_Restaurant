@@ -1,0 +1,9 @@
+{
+    "name": "biconoir/restaurant",
+    "description": "Prototipo Gourmet Biconoir",
+    "type": "project",
+    "require": {
+        "php": ">=8.0"
+    },
+    "license": "MIT"
+}
