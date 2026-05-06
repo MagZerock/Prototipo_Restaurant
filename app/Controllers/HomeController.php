@@ -1,11 +1,13 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\Dish;
 use App\Models\Reservation;
 use App\Models\Survey;
 
 class HomeController {
     public function index() {
+        $dishes = Dish::getAll();
         require_once __DIR__ . '/../Views/home.php';
     }
 
@@ -20,15 +22,12 @@ class HomeController {
     public function reservations() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Reservation::add([
-                'customer' => $_POST['customer'],
+                'customer' => $_POST['name'],
                 'date' => $_POST['date'],
-                'time' => $_POST['time'],
-                'pax' => $_POST['pax'],
-                'type' => $_POST['type'], // Normal o Evento
-                'notes' => $_POST['notes']
+                'type' => $_POST['type']
             ]);
-            echo "<script>alert('¡Reserva recibida! Nos pondremos en contacto pronto.'); window.location.href='index.php';</script>";
-            exit();
+            echo "<script>alert('Reserva enviada'); window.location.href='index.php';</script>";
+            return;
         }
         require_once __DIR__ . '/../Views/reservations.php';
     }
@@ -36,12 +35,12 @@ class HomeController {
     public function survey() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Survey::add([
-                'customer' => $_POST['customer'],
+                'customer' => $_POST['customer'] ?? 'Anónimo',
                 'rating' => (int)$_POST['rating'],
                 'comment' => $_POST['comment']
             ]);
-            echo "<script>alert('¡Gracias por tu opinión! Nos ayuda a mejorar.'); window.location.href='index.php';</script>";
-            exit();
+            echo "<script>alert('¡Gracias por tu feedback!'); window.location.href='index.php';</script>";
+            return;
         }
         require_once __DIR__ . '/../Views/survey.php';
     }

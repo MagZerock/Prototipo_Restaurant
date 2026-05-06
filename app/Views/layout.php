@@ -35,6 +35,7 @@
                 <a href="index.php?action=home" class="hover:text-green-300 transition-colors">Inicio</a>
                 <a href="index.php?action=menu" class="hover:text-green-300 transition-colors">Menú</a>
                 <a href="index.php?action=reservations" class="hover:text-green-300 transition-colors">Reservar</a>
+                <a href="index.php?action=survey" class="hover:text-green-300 transition-colors">Encuesta</a>
                 <a href="index.php?action=orders" class="hover:text-green-300 transition-colors">Mis Pedidos</a>
                 
                 <a href="index.php?action=cart" class="relative hover:text-green-300 transition-colors">
