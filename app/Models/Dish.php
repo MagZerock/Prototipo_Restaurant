@@ -39,10 +39,6 @@ class Dish extends Model {
         return $result;
     }
 
-    /**
-     * Guarda un nuevo plato y sus ingredientes con cantidades requeridas.
-     * $ingredientData: [ 'SKU1' => 0.5, 'SKU2' => 2, ... ]
-     */
     public static function saveWithIngredients($dishData, $ingredientData) {
         return DB::transaction(function() use ($dishData, $ingredientData) {
             $itemId = $dishData['item_id'] ?? 'm_' . bin2hex(random_bytes(4));
@@ -103,7 +99,7 @@ class Dish extends Model {
 
     public static function deleteDish($id) {
         if (self::isUsedInActiveOrder($id)) {
-            throw new \Exception("Regla de Negocio: No se puede eliminar un plato que tiene pedidos activos.");
+            throw new \Exception("No se puede eliminar un plato que tiene pedidos activos.");
         }
 
         $dish = self::where('item_id', $id)->first();

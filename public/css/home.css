@@ -1,4 +1,3 @@
-/* Home Page Standard CSS */
 .hero-section {
     min-height: 85vh;
     display: flex;
@@ -8,11 +7,11 @@
     color: white;
     padding: 0 1.5rem;
     position: relative;
-    background-color: #1a4731; /* Color de respaldo */
-    background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1500');
+    background-color: #1a4731;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1500');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed; /* Efecto parallax suave */
+    background-attachment: fixed;
 }
 
 .hero-title {
@@ -25,7 +24,9 @@
 }
 
 @media (min-width: 768px) {
-    .hero-title { font-size: 5.5rem; }
+    .hero-title {
+        font-size: 5.5rem;
+    }
 }
 
 .hero-subtitle {
@@ -76,7 +77,9 @@
 }
 
 @media (min-width: 768px) {
-    .feature-grid { grid-template-cols: repeat(3, 1fr); }
+    .feature-grid {
+        grid-template-cols: repeat(3, 1fr);
+    }
 }
 
 .feature-item {

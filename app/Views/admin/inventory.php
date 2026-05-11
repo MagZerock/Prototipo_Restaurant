@@ -5,15 +5,10 @@
     <title>Inventario - Biconoir's</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Outfit', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1a4731; border-radius: 10px; }
-    </style>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="bg-gray-50 flex min-h-screen">
 
-    <!-- Sidebar -->
     <aside class="w-80 bg-[#1a4731] text-white flex flex-col sticky top-0 h-screen shadow-2xl">
         <div class="p-10 border-b border-green-800 text-center">
             <h1 class="text-3xl font-bold tracking-tighter">BICONOIR</h1>
@@ -21,7 +16,7 @@
         </div>
         <nav class="flex-grow p-8 space-y-6">
             <a href="index.php?action=admin_dashboard" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
-                <span>📊</span> <span class="font-bold">Dashboard Principal</span>
+                <span>📊</span> <span class="font-bold">Panel Principal</span>
             </a>
             <a href="index.php?action=inventory" class="flex items-center space-x-3 text-white bg-green-900/50 p-4 rounded-xl transition">
                 <span>📦</span> <span class="font-bold">Inventario</span>
@@ -32,7 +27,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-grow p-12 overflow-y-auto">
         <div class="flex justify-between items-end mb-12">
             <div>
@@ -71,13 +65,9 @@
                                 <span class="text-xs text-gray-400 font-bold uppercase"><?php echo $item['unit']; ?></span>
                             </td>
                             <td class="py-6 px-4">
-                                <?php if ($item['total_stock'] <= 0): ?>
-                                    <span class="bg-red-50 text-red-500 px-3 py-1 rounded-full text-[9px] font-bold border border-red-100">AGOTADO</span>
-                                <?php elseif ($item['total_stock'] < 10): ?>
-                                    <span class="bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-[9px] font-bold border border-yellow-100">STOCK BAJO</span>
-                                <?php else: ?>
-                                    <span class="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[9px] font-bold border border-green-100">ÓPTIMO</span>
-                                <?php endif; ?>
+                                <span class="px-3 py-1 rounded-full text-[9px] font-bold border <?php echo $item['estadoClass']; ?>">
+                                    <?php echo $item['estado']; ?>
+                                </span>
                             </td>
                             <td class="py-6 px-4">
                                 <div class="flex justify-center space-x-2">
@@ -92,7 +82,6 @@
         </div>
     </main>
 
-    <!-- Modal Cargar Suministros -->
     <div id="modal_supply" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
         <div class="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_supply').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>
@@ -131,7 +120,6 @@
         </div>
     </div>
 
-    <!-- Modal Editar Ingrediente y Ajuste de Stock -->
     <div id="modal_edit_ingredient" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
         <div class="bg-white rounded-[3rem] p-12 max-w-lg w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_edit_ingredient').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>
@@ -173,28 +161,7 @@
 
     <script>
         const ingredientsData = <?php echo json_encode($ingredients); ?>;
-
-        function handleIngredientSelection(input) {
-            const val = input.value;
-            const skuInput = document.getElementById('sku_code_hidden');
-            const unitInput = document.getElementById('unit_input');
-            const selected = ingredientsData.find(ing => ing.name === val);
-            if (selected) {
-                skuInput.value = selected.sku_code;
-                unitInput.value = selected.unit_of_measurement;
-            } else {
-                skuInput.value = '';
-            }
-        }
-
-        function openEditIngredientModal(item) {
-            document.getElementById('edit_sku').value = item.sku_code;
-            document.getElementById('edit_name').value = item.name;
-            document.getElementById('edit_unit').value = item.unit;
-            document.getElementById('display_stock').value = item.total_stock + ' ' + item.unit;
-            document.getElementById('edit_total_stock').value = item.total_stock;
-            document.getElementById('modal_edit_ingredient').classList.remove('hidden');
-        }
     </script>
+    <script src="js/inventory.js"></script>
 </body>
 </html>

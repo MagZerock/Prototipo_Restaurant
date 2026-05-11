@@ -38,9 +38,6 @@ class User extends Model {
         return $user->user_id;
     }
 
-    /**
-     * Renombrado para evitar conflicto con el método estático find() de Eloquent.
-     */
     public static function authenticate($email, $password) {
         $user = self::where('email', $email)
                     ->where('password_hash', $password)

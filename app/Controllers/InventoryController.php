@@ -20,16 +20,37 @@ class InventoryController {
     }
 
     public function getInventoryStatus() {
-        return Ingredient::with(['inventoryBatches' => function($query) {
-            $query->where('quantity', '!=', 0); // Consideramos lotes con stock positivo o ajustes
-        }])->get()->map(function($ingredient) {
+        $ingredients = DB::table('ingredients')->get();
+        return $ingredients->map(function($ingredient) {
+            $stock = (float)$ingredient->stock_disponible;
+            if ($stock <= 0) {
+                $estado = 'AGOTADO';
+                $estadoClass = 'bg-red-50 text-red-500 border-red-100';
+            } elseif ($stock < 10) {
+                $estado = 'STOCK BAJO';
+                $estadoClass = 'bg-yellow-50 text-yellow-600 border-yellow-100';
+            } else {
+                $estado = 'ÓPTIMO';
+                $estadoClass = 'bg-green-50 text-green-600 border-green-100';
+            }
             return [
-                'sku_code' => $ingredient->sku_code,
-                'name' => $ingredient->name,
-                'unit' => $ingredient->unit_of_measurement,
-                'total_stock' => (float)$ingredient->inventoryBatches->sum('quantity')
+                'sku_code'   => $ingredient->sku_code,
+                'name'       => $ingredient->name,
+                'unit'       => $ingredient->unit_of_measurement,
+                'total_stock'=> $stock,
+                'estado'     => $estado,
+                'estadoClass'=> $estadoClass,
             ];
         });
+    }
+
+    private function syncStock(string $sku) {
+        $total = DB::table('inventory_batches')
+            ->where('sku_code', $sku)
+            ->sum('quantity');
+        DB::table('ingredients')
+            ->where('sku_code', $sku)
+            ->update(['stock_disponible' => (float)$total]);
     }
 
     public function storeBatch() {
@@ -69,6 +90,7 @@ class InventoryController {
                         'cost_per_unit' => (float)$_POST['cost_per_unit'],
                         'purchase_date' => $_POST['purchase_date'] ?: date('Y-m-d')
                     ]);
+                    $this->syncStock($ingredient->sku_code);
                 });
                 echo "<script>alert('Lote e ingrediente procesados correctamente.'); window.location.href='index.php?action=inventory';</script>";
             } catch (\Exception $e) {
@@ -78,9 +100,6 @@ class InventoryController {
         }
     }
 
-    /**
-     * Actualiza ingrediente y realiza ajuste de stock mediante un nuevo lote.
-     */
     public function editIngredient() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
@@ -88,26 +107,25 @@ class InventoryController {
                     $sku = $_POST['sku_code'];
                     $ingredient = Ingredient::findOrFail($sku);
                     
-                    // 1. Actualizar metadatos básicos
                     $ingredient->update([
                         'name' => $_POST['name'],
                         'unit_of_measurement' => $_POST['unit_of_measurement']
                     ]);
 
-                    // 2. Lógica de Ajuste de Stock
                     $currentStock = (float)$ingredient->inventoryBatches()->sum('quantity');
                     $newStock = (float)$_POST['total_stock'];
                     $adjustment = $newStock - $currentStock;
 
-                    if (abs($adjustment) > 0.0001) { // Si hay un cambio significativo
+                    if (abs($adjustment) > 0.0001) { 
                         InventoryBatch::create([
                             'batch_id' => 'adj_' . bin2hex(random_bytes(4)),
                             'sku_code' => $sku,
                             'quantity' => $adjustment,
-                            'cost_per_unit' => 0, // Ajuste manual no tiene costo de compra
+                            'cost_per_unit' => 0,
                             'purchase_date' => date('Y-m-d'),
                         ]);
                     }
+                    $this->syncStock($sku);
                 });
                 echo "<script>alert('Ingrediente y stock actualizados correctamente.'); window.location.href='index.php?action=inventory';</script>";
             } catch (\Exception $e) {
@@ -124,7 +142,6 @@ class InventoryController {
                     $sku = $_GET['sku'];
                     $ingredient = Ingredient::findOrFail($sku);
                     
-                    // Verificamos si está siendo usado en algún plato
                     if ($ingredient->menuItems()->count() > 0) {
                         throw new \Exception("No se puede eliminar un ingrediente vinculado a un plato activo.");
                     }

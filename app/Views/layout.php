@@ -6,23 +6,7 @@
     <title>Biconoir's Restaurant - Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #f9fafb; margin: 0; }
-        .modal-personalize { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.7); 
-            backdrop-filter: blur(8px); 
-            z-index: 1000; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
-        }
-        .modal-personalize.active { display: flex; }
-        .logo-main { height: 48px; width: auto; filter: brightness(0) invert(1); }
-    </style>
+    <link rel="stylesheet" href="css/layout.css">
 </head>
 <body class="flex flex-col min-h-screen antialiased">
 
@@ -34,12 +18,13 @@
             <nav class="hidden md:flex items-center space-x-8 font-medium">
                 <a href="index.php?action=home" class="hover:text-green-300 transition-colors">Inicio</a>
                 <a href="index.php?action=menu" class="hover:text-green-300 transition-colors">Menú</a>
+                <a href="index.php?action=about" class="hover:text-green-300 transition-colors">Sobre Nosotros</a>
                 <a href="index.php?action=reservations" class="hover:text-green-300 transition-colors">Reservar</a>
                 <a href="index.php?action=survey" class="hover:text-green-300 transition-colors">Encuesta</a>
                 <a href="index.php?action=orders" class="hover:text-green-300 transition-colors">Mis Pedidos</a>
                 
-                <a href="index.php?action=cart" class="relative hover:text-green-300 transition-colors">
-                    Carrito
+                <a href="index.php?action=cart" class="relative hover:text-green-300 transition-colors text-2xl">
+                    🛒
                     <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
                         <span class="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold shadow-lg">
                             <?php echo array_sum(array_column($_SESSION['cart'], 'quantity')); ?>

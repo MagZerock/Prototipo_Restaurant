@@ -1,4 +1,3 @@
-/* Locations Page Standard CSS */
 .locations-section {
     padding: 6rem 1.5rem;
     background-color: #f9fafb;
@@ -29,7 +28,9 @@
 }
 
 @media (min-width: 1024px) {
-    .location-grid { grid-template-cols: repeat(2, 1fr); }
+    .location-grid {
+        grid-template-cols: repeat(2, 1fr);
+    }
 }
 
 .location-card {

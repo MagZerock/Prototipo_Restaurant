@@ -17,7 +17,6 @@ class HomeController {
 
     public function reservations() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Corregido: Mapeo de campos del formulario a la lógica de reservación
             Reservation::add([
                 'customer_name' => $_POST['customer'] ?? 'Cliente Anónimo',
                 'date' => $_POST['date'],

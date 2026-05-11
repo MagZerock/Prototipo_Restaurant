@@ -8,7 +8,7 @@ class AuditLog extends Model {
     protected $primaryKey = 'log_id';
     public $incrementing = false;
     protected $keyType = 'string';
-    public $timestamps = false; // Using database timestamp
+    public $timestamps = false; 
 
     protected $fillable = [
         'log_id',

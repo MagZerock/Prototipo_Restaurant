@@ -24,17 +24,12 @@ class OrderDetail extends Model {
         return $this->belongsTo(Dish::class, 'item_id', 'item_id');
     }
 
-    /**
-     * Calcula el costo total de los ingredientes para esta línea del pedido.
-     */
     public function calculateItemCost() {
-        // Obtenemos el plato con sus ingredientes
         $dish = $this->menuItem;
         if (!$dish) return 0.0;
         
         $totalIngredientCost = 0.0;
         
-        // Sumamos el último costo registrado de cada ingrediente del plato
         foreach ($dish->ingredients as $ingredient) {
             $totalIngredientCost += $ingredient->getLastCost();
         }

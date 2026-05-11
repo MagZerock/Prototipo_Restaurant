@@ -5,13 +5,10 @@
     <title>Panel de Administración - Biconoir's</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Outfit', sans-serif; }
-    </style>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="bg-gray-50 flex min-h-screen">
 
-    <!-- Sidebar -->
     <aside class="w-80 bg-[#1a4731] text-white flex flex-col sticky top-0 h-screen shadow-2xl">
         <div class="p-10 border-b border-green-800 text-center">
             <h1 class="text-3xl font-bold tracking-tighter">BICONOIR</h1>
@@ -22,7 +19,7 @@
                 <span>🏠</span> <span class="font-bold">Volver a la Web</span>
             </a>
             <a href="index.php?action=admin_dashboard" class="flex items-center space-x-3 text-white bg-green-900/50 p-4 rounded-xl transition">
-                <span>📊</span> <span class="font-bold">Dashboard Principal</span>
+                <span>📊</span> <span class="font-bold">Panel Principal</span>
             </a>
             <a href="index.php?action=inventory" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
                 <span>📦</span> <span class="font-bold">Inventario</span>
@@ -42,7 +39,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-grow p-12 overflow-y-auto">
         <div class="flex justify-between items-end mb-12">
             <div>
@@ -55,7 +51,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <!-- Dishes Section -->
             <section class="lg:col-span-2 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
                 <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
                     <span class="mr-3">🍽️</span> Gestión del Menú
@@ -79,7 +74,6 @@
                 </div>
             </section>
 
-            <!-- Sidebar Info -->
             <div class="space-y-10">
                 <section class="bg-white rounded-[3rem] shadow-2xl p-8 border border-gray-100">
                     <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
@@ -97,7 +91,6 @@
             </div>
         </div>
 
-        <!-- Orders Management -->
         <section class="mt-12 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
             <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
                 <span class="mr-3">🛍️</span> Gestión de Pedidos
@@ -146,7 +139,6 @@
         </section>
     </main>
 
-    <!-- Modal ADD -->
     <div id="modal_add" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
         <div class="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_add').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>
@@ -180,7 +172,6 @@
         </div>
     </div>
 
-    <!-- Modal EDIT -->
     <div id="modal_edit" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
         <div class="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_edit').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>

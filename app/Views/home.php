@@ -1,10 +1,6 @@
 <?php ob_start(); ?>
 
-<style type="text/tailwindcss">
-    @layer components {
-        .hero-section { @apply min-h-[85vh] flex items-center justify-center text-center text-white px-6; background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1500'); background-size: cover; background-position: center; background-attachment: fixed; }
-    }
-</style>
+<link rel="stylesheet" href="css/home.css">
 
 <section class="hero-section">
     <div class="max-w-4xl animate-fade-in">
@@ -42,6 +38,8 @@
         </div>
     </div>
 </section>
+
+<?php include __DIR__ . '/locations_section.php'; ?>
 
 <?php 
 $content = ob_get_clean(); 

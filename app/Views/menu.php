@@ -30,15 +30,12 @@
     </div>
 </section>
 
-<!-- Modal de Personalización -->
 <div id="modal_personalize" class="modal-personalize">
     <div class="bg-white rounded-[3.5rem] p-10 md:p-12 max-w-4xl w-full shadow-2xl relative border border-gray-100 overflow-hidden">
-        <!-- Decoración -->
         <div class="absolute top-0 left-0 w-full h-2 bg-[#1a4731]"></div>
         <button onclick="closePersonalizeModal()" class="absolute top-8 right-8 text-gray-300 hover:text-red-500 text-3xl transition">✕</button>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <!-- Columna Visual -->
             <div>
                 <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl mb-8 group">
                     <img id="modal_img" src="" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
@@ -49,14 +46,12 @@
                 <p id="modal_desc" class="text-gray-400 italic leading-relaxed text-sm"></p>
             </div>
 
-            <!-- Columna Formulario -->
             <form action="index.php?action=add_to_cart" method="POST" class="space-y-8">
                 <input type="hidden" name="id" id="modal_id">
                 
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">Personaliza tus ingredientes:</label>
                     <div id="ingredients_list" class="grid grid-cols-2 gap-3 bg-gray-50 p-6 rounded-[2rem] border border-gray-100 max-h-60 overflow-y-auto">
-                        <!-- JS populated -->
                     </div>
                 </div>
 
@@ -79,47 +74,7 @@
     </div>
 </div>
 
-<script>
-function openPersonalizeModal(dish) {
-    document.getElementById('modal_id').value = dish.id;
-    document.getElementById('modal_name').innerText = dish.name;
-    document.getElementById('modal_desc').innerText = dish.description;
-    document.getElementById('modal_price').innerText = '$' + parseFloat(dish.price).toFixed(2);
-    document.getElementById('modal_img').src = dish.image;
-    document.getElementById('modal_qty').value = 1;
-
-    const list = document.getElementById('ingredients_list');
-    list.innerHTML = '';
-    dish.ingredients.forEach(ing => {
-        const ingName = typeof ing === 'object' ? ing.name : ing;
-        list.innerHTML += `
-            <label class="flex items-center space-x-3 cursor-pointer group p-2 hover:bg-white rounded-xl transition shadow-sm border border-transparent hover:border-green-100">
-                <input type="checkbox" name="ingredients[]" value="${ingName}" checked class="rounded-md border-gray-300 text-[#1a4731] focus:ring-[#1a4731] w-5 h-5">
-                <span class="text-xs font-bold text-gray-600 group-hover:text-[#1a4731] transition-colors">${ingName}</span>
-            </label>
-        `;
-    });
-
-    const modal = document.getElementById('modal_personalize');
-    modal.classList.add('active');
-}
-
-function closePersonalizeModal() {
-    const modal = document.getElementById('modal_personalize');
-    modal.classList.remove('active');
-}
-
-function changeQty(val) {
-    const input = document.getElementById('modal_qty');
-    let newVal = parseInt(input.value) + val;
-    if (newVal >= 1 && newVal <= 10) input.value = newVal;
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById('modal_personalize');
-    if (event.target == modal) closePersonalizeModal();
-}
-</script>
+<script src="js/menu.js"></script>
 
 <?php 
 $content = ob_get_clean(); 

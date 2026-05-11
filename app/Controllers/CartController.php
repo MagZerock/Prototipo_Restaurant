@@ -10,16 +10,12 @@ class CartController {
         require_once __DIR__ . '/../Views/cart.php';
     }
 
-    /**
-     * Lógica del Carrito: Recibe item_id, busca con Eloquent y guarda en sesión.
-     */
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $id = $_POST['id'];
                 $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
                 
-                // Buscamos el plato con sus ingredientes usando Eloquent
                 $dish = Dish::where('item_id', $id)->first();
 
                 if ($dish) {
@@ -27,25 +23,21 @@ class CartController {
                         $_SESSION['cart'] = [];
                     }
 
-                    // Calculamos la nueva cantidad
                     $newQuantity = isset($_SESSION['cart'][$id]) ? $_SESSION['cart'][$id]['quantity'] + $quantity : $quantity;
 
-                    // Instancia temporal para calcular costos según la lógica del modelo
                     $tempDetail = new OrderDetail([
                         'item_id' => $dish->item_id,
                         'quantity' => $newQuantity,
                         'selling_price' => (float)$dish->price
                     ]);
                     
-                    // Vinculamos el plato manualmente para el cálculo
                     $tempDetail->setRelation('menuItem', $dish);
 
-                    // Guardamos la representación de OrderDetail en la sesión
                     $_SESSION['cart'][$id] = [
                         'item_id' => $dish->item_id,
                         'name' => $dish->name,
                         'quantity' => $newQuantity,
-                        'price' => (float)$dish->price, // Para compatibilidad con vistas
+                        'price' => (float)$dish->price, 
                         'selling_price' => (float)$dish->price,
                         'ingredient_cost' => $tempDetail->calculateItemCost(),
                         'ingredients' => $dish->ingredients->pluck('name')->toArray(),
@@ -53,7 +45,6 @@ class CartController {
                     ];
                 }
             } catch (\Exception $e) {
-                // Manejo de excepciones (Error de conexión o base de datos)
                 echo "<script>alert('Error en la base de datos: " . $e->getMessage() . "'); window.location.href='index.php?action=menu';</script>";
                 exit();
             }

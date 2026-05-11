@@ -24,10 +24,7 @@ class Ingredient extends Model {
     public function inventoryBatches() {
         return $this->hasMany(InventoryBatch::class, 'sku_code', 'sku_code');
     }
-
-    /**
-     * Obtiene el costo más reciente del ingrediente desde los lotes de inventario.
-     */
+    
     public function getLastCost() {
         $lastBatch = $this->inventoryBatches()->orderBy('purchase_date', 'desc')->first();
         return $lastBatch ? (float)$lastBatch->cost_per_unit : 0.0;

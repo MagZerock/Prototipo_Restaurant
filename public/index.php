@@ -3,21 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Illuminate\Database\Capsule\Manager as Capsule;
-
-$capsule = new Capsule;
-
-$capsule->addConnection([
-    'driver'   => 'pgsql',
-    'url'      => 'postgresql://postgres.teqgmzwpcwcelrpecdyq:VNcazVEpbUvpGyVJ@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true',
-    'charset'  => 'utf8',
-    'prefix'   => '',
-    'sslmode'  => 'require',
-]);
-
-// Set as global and boot Eloquent
-$capsule->setAsGlobal();
-$capsule->bootEloquent();
+require_once __DIR__ . '/../config/connection.php';
 
 use App\Controllers\HomeController;
 use App\Controllers\MenuController;
