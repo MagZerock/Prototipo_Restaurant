@@ -1,18 +1,27 @@
 <?php
 namespace App\Models;
 
-class Survey {
-    private static $file = __DIR__ . '/../database/surveys.json';
+use Illuminate\Database\Eloquent\Model;
+
+class Survey extends Model {
+    protected $table = 'surveys';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'customer_name',
+        'rating',
+        'comment'
+    ];
 
     public static function getAll() {
-        if (!file_exists(self::$file)) return [];
-        return json_decode(file_get_contents(self::$file), true);
+        return self::orderBy('created_at', 'desc')->get()->toArray();
     }
 
     public static function add($data) {
-        $surveys = self::getAll();
-        $data['id'] = time();
-        $surveys[] = $data;
-        file_put_contents(self::$file, json_encode($surveys));
+        return self::create([
+            'customer_name' => $data['customer'] ?? 'Anónimo',
+            'rating' => (int)$data['rating'],
+            'comment' => $data['comment'] ?? ''
+        ]);
     }
 }

@@ -1,35 +1,50 @@
 <?php
 namespace App\Models;
 
-class User {
-    private static $file = __DIR__ . '/../database/users.json';
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model {
+    protected $table = 'users';
+    protected $primaryKey = 'user_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'email',
+        'phone',
+        'password_hash',
+        'role'
+    ];
 
     public static function getAll() {
-        if (!file_exists(self::$file)) {
-            // Usuarios por defecto si el archivo no existe
-            $defaults = [
-                ['name' => 'Admin', 'email' => 'admin@biconoir.com', 'password' => 'admin123', 'role' => 'admin'],
-                ['name' => 'Cliente Ejemplo', 'email' => 'customer@example.com', 'password' => 'customer123', 'role' => 'customer']
-            ];
-            file_put_contents(self::$file, json_encode($defaults));
-            return $defaults;
-        }
-        return json_decode(file_get_contents(self::$file), true);
+        return self::all()->toArray();
     }
 
     public static function add($data) {
-        $users = self::getAll();
-        $users[] = $data;
-        file_put_contents(self::$file, json_encode($users));
+        $userId = $data['user_id'] ?? 'u_' . bin2hex(random_bytes(4));
+        
+        $user = self::create([
+            'user_id' => $userId,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+            'password_hash' => $data['password'] ?? $data['password_hash'],
+            'role' => $data['role'] ?? 'customer'
+        ]);
+
+        return $user->user_id;
     }
 
-    public static function find($email, $password) {
-        $users = self::getAll();
-        foreach ($users as $user) {
-            if ($user['email'] === $email && $user['password'] === $password) {
-                return $user;
-            }
-        }
-        return null;
+    /**
+     * Renombrado para evitar conflicto con el método estático find() de Eloquent.
+     */
+    public static function authenticate($email, $password) {
+        $user = self::where('email', $email)
+                    ->where('password_hash', $password)
+                    ->first();
+        return $user ? $user->toArray() : null;
     }
 }

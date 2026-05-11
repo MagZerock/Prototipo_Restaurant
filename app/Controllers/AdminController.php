@@ -8,7 +8,7 @@ use App\Models\Order;
 
 class AdminController {
     public function dashboard() {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'administrator'])) {
             header('Location: index.php?action=login');
             exit();
         }
@@ -17,6 +17,7 @@ class AdminController {
         $reservations = Reservation::getAll();
         $surveys = Survey::getAll();
         $orders = Order::getAll();
+        $ingredients = \App\Models\Ingredient::getAll();
 
         require_once __DIR__ . '/../Views/admin/dashboard.php';
     }
@@ -24,12 +25,11 @@ class AdminController {
     public function addDish() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = [
-                'id' => time(),
                 'name' => $_POST['name'],
                 'description' => $_POST['description'],
                 'price' => (float)$_POST['price'],
                 'image' => $_POST['image'],
-                'ingredients' => [] // Por ahora vacío al añadir nuevo, se puede mejorar
+                'ingredients' => $this->processIngredientInput($_POST['ingredients'] ?? [])
             ];
             Dish::add($data);
         }
@@ -44,9 +44,39 @@ class AdminController {
                 'name' => $_POST['name'],
                 'description' => $_POST['description'],
                 'price' => (float)$_POST['price'],
-                'image' => $_POST['image']
+                'image' => $_POST['image'],
+                'ingredients' => $this->processIngredientInput($_POST['ingredients'] ?? [])
             ];
-            Dish::update($id, $data);
+            
+            try {
+                Dish::updateDish($id, $data);
+            } catch (\Exception $e) {
+                echo "<script>alert('" . $e->getMessage() . "'); window.location.href='index.php?action=admin_dashboard';</script>";
+                exit();
+            }
+        }
+        header('Location: index.php?action=admin_dashboard');
+        exit();
+    }
+
+    private function processIngredientInput($input) {
+        $filtered = [];
+        foreach ($input as $sku => $meta) {
+            if (isset($meta['selected']) && $meta['selected'] == '1') {
+                $filtered[$sku] = (float)($meta['quantity'] ?? 0);
+            }
+        }
+        return $filtered;
+    }
+
+    public function deleteDish() {
+        if (isset($_GET['id'])) {
+            try {
+                Dish::deleteDish($_GET['id']);
+            } catch (\Exception $e) {
+                echo "<script>alert('" . $e->getMessage() . "'); window.location.href='index.php?action=admin_dashboard';</script>";
+                exit();
+            }
         }
         header('Location: index.php?action=admin_dashboard');
         exit();

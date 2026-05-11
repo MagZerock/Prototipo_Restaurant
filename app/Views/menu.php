@@ -91,10 +91,11 @@ function openPersonalizeModal(dish) {
     const list = document.getElementById('ingredients_list');
     list.innerHTML = '';
     dish.ingredients.forEach(ing => {
+        const ingName = typeof ing === 'object' ? ing.name : ing;
         list.innerHTML += `
             <label class="flex items-center space-x-3 cursor-pointer group p-2 hover:bg-white rounded-xl transition shadow-sm border border-transparent hover:border-green-100">
-                <input type="checkbox" name="ingredients[]" value="${ing}" checked class="rounded-md border-gray-300 text-[#1a4731] focus:ring-[#1a4731] w-5 h-5">
-                <span class="text-xs font-bold text-gray-600 group-hover:text-[#1a4731] transition-colors">${ing}</span>
+                <input type="checkbox" name="ingredients[]" value="${ingName}" checked class="rounded-md border-gray-300 text-[#1a4731] focus:ring-[#1a4731] w-5 h-5">
+                <span class="text-xs font-bold text-gray-600 group-hover:text-[#1a4731] transition-colors">${ingName}</span>
             </label>
         `;
     });

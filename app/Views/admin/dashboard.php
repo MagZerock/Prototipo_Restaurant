@@ -21,16 +21,18 @@
             <a href="index.php?action=home" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
                 <span>🏠</span> <span class="font-bold">Volver a la Web</span>
             </a>
+            <a href="index.php?action=admin_dashboard" class="flex items-center space-x-3 text-white bg-green-900/50 p-4 rounded-xl transition">
+                <span>📊</span> <span class="font-bold">Dashboard Principal</span>
+            </a>
+            <a href="index.php?action=inventory" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
+                <span>📦</span> <span class="font-bold">Inventario</span>
+            </a>
             <div class="pt-4 border-t border-green-800">
                 <p class="text-[10px] text-green-500 font-bold uppercase mb-4">Métricas</p>
                 <div class="space-y-4">
                     <div class="bg-green-900/40 p-4 rounded-2xl border border-green-700/30">
                         <p class="text-xs text-green-300">Total Platos</p>
                         <p class="text-2xl font-bold"><?php echo count($dishes); ?></p>
-                    </div>
-                    <div class="bg-green-900/40 p-4 rounded-2xl border border-green-700/30">
-                        <p class="text-xs text-green-300">Reservas</p>
-                        <p class="text-2xl font-bold"><?php echo count($reservations); ?></p>
                     </div>
                 </div>
             </div>
@@ -68,9 +70,10 @@
                                     <p class="text-xs text-green-600 font-bold">$<?php echo number_format($dish['price'], 2); ?></p>
                                 </div>
                             </div>
-                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($dish)); ?>)" class="bg-white p-3 rounded-xl shadow-md text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
-                                ✏️
-                            </button>
+                            <div class="flex space-x-2">
+                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($dish)); ?>)" class="bg-white p-3 rounded-xl shadow-md text-blue-600 hover:bg-blue-600 hover:text-white transition-all">✏️</button>
+                                <a href="index.php?action=delete_dish&id=<?php echo $dish['id']; ?>" onclick="return confirm('¿Eliminar este plato?')" class="bg-white p-3 rounded-xl shadow-md text-red-600 hover:bg-red-600 hover:text-white transition-all">🗑️</a>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -78,7 +81,6 @@
 
             <!-- Sidebar Info -->
             <div class="space-y-10">
-                <!-- Reservations -->
                 <section class="bg-white rounded-[3rem] shadow-2xl p-8 border border-gray-100">
                     <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
                         <span class="mr-3 text-2xl">📅</span> Reservas
@@ -86,26 +88,8 @@
                     <div class="space-y-4">
                         <?php foreach (array_reverse($reservations) as $r): ?>
                             <div class="p-4 border-l-4 border-green-500 bg-green-50/50 rounded-r-2xl">
-                                <p class="font-bold text-gray-800 text-sm"><?php echo $r['customer']; ?></p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1"><?php echo $r['date']; ?> | <?php echo $r['type']; ?></p>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </section>
-
-                <!-- Feedback -->
-                <section class="bg-white rounded-[3rem] shadow-2xl p-8 border border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <span class="mr-3 text-2xl">⭐</span> Reseñas
-                    </h3>
-                    <div class="space-y-6">
-                        <?php foreach (array_reverse($surveys) as $s): ?>
-                            <div class="border-b border-gray-100 pb-4 last:border-0">
-                                <div class="flex justify-between items-center mb-2">
-                                    <p class="font-bold text-gray-800 text-sm"><?php echo $s['customer']; ?></p>
-                                    <span class="text-yellow-500 text-xs"><?php echo str_repeat('★', $s['rating']); ?></span>
-                                </div>
-                                <p class="text-xs text-gray-500 italic">"<?php echo $s['comment']; ?>"</p>
+                                <p class="font-bold text-gray-800 text-sm"><?php echo $r['customer_id']; ?></p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1"><?php echo $r['date']; ?> | Pax: <?php echo $r['number_of_people']; ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -116,53 +100,43 @@
         <!-- Orders Management -->
         <section class="mt-12 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
             <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                <span class="mr-3">🛍️</span> Gestión de Pedidos Activos
+                <span class="mr-3">🛍️</span> Gestión de Pedidos
             </h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                            <th class="pb-4 px-4">ID / Fecha</th>
+                            <th class="pb-4 px-4">ID</th>
                             <th class="pb-4 px-4">Cliente</th>
-                            <th class="pb-4 px-4">Detalle / Ingredientes</th>
+                            <th class="pb-4 px-4">Detalle</th>
                             <th class="pb-4 px-4">Total</th>
-                            <th class="pb-4 px-4">Estado Actual</th>
+                            <th class="pb-4 px-4">Estado</th>
                             <th class="pb-4 px-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         <?php foreach (array_reverse($orders) as $o): ?>
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="py-6 px-4">
-                                    <p class="font-bold text-gray-800 text-sm">#<?php echo $o['id']; ?></p>
-                                    <p class="text-[10px] text-gray-400"><?php echo $o['created_at']; ?></p>
-                                </td>
+                                <td class="py-6 px-4 font-bold text-gray-800 text-sm">#<?php echo $o['id']; ?></td>
                                 <td class="py-6 px-4">
                                     <p class="font-bold text-gray-700 text-sm"><?php echo $o['customer_name']; ?></p>
-                                    <p class="text-xs text-gray-400"><?php echo $o['customer_email']; ?></p>
                                 </td>
                                 <td class="py-6 px-4">
-                                    <?php foreach ($o['items'] as $item): ?>
-                                        <div class="mb-2">
+                                    <?php if (isset($o['items']) && !empty($o['items'])): ?>
+                                        <?php foreach ($o['items'] as $item): ?>
                                             <p class="text-xs font-bold text-gray-700"><?php echo $item['quantity']; ?>x <?php echo $item['name']; ?></p>
-                                            <p class="text-[9px] text-gray-400 italic">Ingredientes: <?php echo implode(', ', $item['ingredients']); ?></p>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <p class="text-xs text-gray-400 italic">Sin detalles</p>
+                                    <?php endif; ?>
                                 </td>
+                                <td class="py-6 px-4 font-bold text-[#1a4731]">$<?php echo number_format($o['total'], 2); ?></td>
                                 <td class="py-6 px-4">
-                                    <span class="font-bold text-[#1a4731]">$<?php echo number_format($o['total'], 2); ?></span>
+                                    <span class="px-4 py-1 rounded-full text-[10px] font-bold uppercase <?php echo $o['status'] === 'Completado' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-green-50 text-[#1a4731] border-green-100'; ?> border"><?php echo $o['status']; ?></span>
                                 </td>
-                                <td class="py-6 px-4">
-                                    <span class="px-4 py-1 rounded-full text-[10px] font-bold uppercase bg-green-50 text-[#1a4731] border border-green-100">
-                                        <?php echo $o['status']; ?>
-                                    </span>
-                                </td>
-                                <td class="py-6 px-4">
-                                    <div class="flex justify-center gap-2">
-                                        <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=En Preparación" class="p-2 bg-gray-100 hover:bg-yellow-100 rounded-lg text-xs" title="En Preparación">🍳</a>
-                                        <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Listo para Servir" class="p-2 bg-gray-100 hover:bg-green-100 rounded-lg text-xs" title="Listo">✅</a>
-                                        <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Entregado" class="p-2 bg-gray-100 hover:bg-blue-100 rounded-lg text-xs" title="Entregado">📦</a>
-                                    </div>
+                                <td class="py-6 px-4 flex justify-center gap-2">
+                                    <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Completado" class="p-2 bg-gray-100 rounded-lg hover:bg-green-600 hover:text-white transition" title="Marcar como Completado (Descuenta Stock)">✅</a>
+                                    <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Cancelado" class="p-2 bg-gray-100 rounded-lg hover:bg-red-600 hover:text-white transition" title="Cancelar">❌</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -174,31 +148,69 @@
 
     <!-- Modal ADD -->
     <div id="modal_add" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
-        <div class="bg-white rounded-[3rem] p-12 max-w-md w-full shadow-2xl relative">
+        <div class="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_add').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>
             <h3 class="text-3xl font-bold mb-8 uppercase tracking-tighter">Nuevo Plato</h3>
-            <form action="index.php?action=add_dish" method="POST" class="space-y-5">
-                <input type="text" name="name" required placeholder="Nombre del plato" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none">
-                <textarea name="description" required placeholder="Descripción gourmet" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none h-32"></textarea>
-                <input type="number" step="0.01" name="price" required placeholder="Precio (ej. 15.50)" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none">
-                <input type="text" name="image" placeholder="URL de la imagen" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none">
-                <button type="submit" class="w-full bg-[#1a4731] text-white py-5 rounded-2xl font-bold text-xl shadow-xl hover:bg-black transition-all">Guardar Plato</button>
+            <form action="index.php?action=add_dish" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-5">
+                    <input type="text" name="name" required placeholder="Nombre del plato" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a4731]">
+                    <textarea name="description" required placeholder="Descripción" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a4731] h-32"></textarea>
+                    <input type="number" step="0.01" name="price" required placeholder="Precio" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a4731]">
+                    <input type="text" name="image" placeholder="URL imagen" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a4731]">
+                </div>
+                <div class="space-y-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2">Composición e Inventario</p>
+                    <div class="space-y-2 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <?php foreach ($ingredients as $ing): ?>
+                            <div class="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" name="ingredients[<?php echo $ing['sku_code']; ?>][selected]" value="1" class="w-4 h-4 rounded border-gray-300 text-[#1a4731]">
+                                    <span class="text-xs font-bold text-gray-700"><?php echo $ing['name']; ?></span>
+                                </label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" step="0.01" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" placeholder="Cant." class="w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase"><?php echo $ing['unit_of_measurement']; ?></span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="submit" class="w-full bg-[#1a4731] text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-black transition-all">Guardar Plato</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- Modal EDIT -->
     <div id="modal_edit" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-6">
-        <div class="bg-white rounded-[3rem] p-12 max-w-md w-full shadow-2xl relative">
+        <div class="bg-white rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl relative">
             <button onclick="document.getElementById('modal_edit').classList.add('hidden')" class="absolute top-6 right-6 text-gray-300 hover:text-red-500">✕</button>
             <h3 class="text-3xl font-bold mb-8 uppercase tracking-tighter text-blue-600">Editar Plato</h3>
-            <form action="index.php?action=edit_dish" method="POST" class="space-y-5">
+            <form action="index.php?action=edit_dish" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <input type="hidden" name="id" id="edit_id">
-                <input type="text" name="name" id="edit_name" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none">
-                <textarea name="description" id="edit_description" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none h-32"></textarea>
-                <input type="number" step="0.01" name="price" id="edit_price" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none">
-                <input type="text" name="image" id="edit_image" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none">
-                <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-xl shadow-xl hover:bg-blue-800 transition-all">Actualizar Plato</button>
+                <div class="space-y-5">
+                    <input type="text" name="name" id="edit_name" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600">
+                    <textarea name="description" id="edit_description" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 h-32"></textarea>
+                    <input type="number" step="0.01" name="price" id="edit_price" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600">
+                    <input type="text" name="image" id="edit_image" class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div class="space-y-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2">Composición e Inventario</p>
+                    <div id="edit_ingredients_container" class="space-y-2 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <?php foreach ($ingredients as $ing): ?>
+                            <div class="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" name="ingredients[<?php echo $ing['sku_code']; ?>][selected]" value="1" data-sku="<?php echo $ing['sku_code']; ?>" class="w-4 h-4 rounded border-gray-300 text-blue-600">
+                                    <span class="text-xs font-bold text-gray-700"><?php echo $ing['name']; ?></span>
+                                </label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" step="0.01" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" data-qty-sku="<?php echo $ing['sku_code']; ?>" class="w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase"><?php echo $ing['unit_of_measurement']; ?></span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-blue-800 transition-all">Actualizar Plato</button>
+                </div>
             </form>
         </div>
     </div>

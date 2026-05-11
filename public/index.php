@@ -1,20 +1,23 @@
 <?php
 session_start();
 
-spl_autoload_register(function ($class) {
-    $prefix = 'App\\';
-    $base_dir = __DIR__ . '/../app/';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) return;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
-    $relative_class = substr($class, $len);
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+$capsule = new Capsule;
 
-    if (file_exists($file)) {
-        require_once $file;
-    }
-});
+$capsule->addConnection([
+    'driver'   => 'pgsql',
+    'url'      => 'postgresql://postgres.teqgmzwpcwcelrpecdyq:VNcazVEpbUvpGyVJ@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true',
+    'charset'  => 'utf8',
+    'prefix'   => '',
+    'sslmode'  => 'require',
+]);
+
+// Set as global and boot Eloquent
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
 
 use App\Controllers\HomeController;
 use App\Controllers\MenuController;
@@ -70,8 +73,23 @@ switch ($action) {
     case 'edit_dish':
         (new AdminController())->editDish();
         break;
+    case 'delete_dish':
+        (new AdminController())->deleteDish();
+        break;
     case 'update_order_status':
         (new AdminController())->updateOrderStatus();
+        break;
+    case 'inventory':
+        (new \App\Controllers\InventoryController())->index();
+        break;
+    case 'store_supply':
+        (new \App\Controllers\InventoryController())->storeBatch();
+        break;
+    case 'edit_ingredient':
+        (new \App\Controllers\InventoryController())->editIngredient();
+        break;
+    case 'delete_ingredient':
+        (new \App\Controllers\InventoryController())->deleteIngredient();
         break;
     case 'checkout':
         if (!isset($_SESSION['user'])) {
@@ -100,7 +118,7 @@ switch ($action) {
             header('Location: index.php?action=login');
             exit();
         }
-        $orders = \App\Models\Order::getByUser($_SESSION['user']['email']);
+        $orders = \App\Models\Order::getUserHistory($_SESSION['user']['email']);
         require_once __DIR__ . '/../app/Views/orders.php';
         break;
     default:

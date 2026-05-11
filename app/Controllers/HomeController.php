@@ -15,18 +15,18 @@ class HomeController {
         require_once __DIR__ . '/../Views/about.php';
     }
 
-    public function locations() {
-        require_once __DIR__ . '/../Views/locations.php';
-    }
-
     public function reservations() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Corregido: Mapeo de campos del formulario a la lógica de reservación
             Reservation::add([
-                'customer' => $_POST['name'],
+                'customer_name' => $_POST['customer'] ?? 'Cliente Anónimo',
                 'date' => $_POST['date'],
-                'type' => $_POST['type']
+                'time' => $_POST['time'],
+                'pax' => $_POST['pax'],
+                'type' => $_POST['type'],
+                'notes' => $_POST['notes']
             ]);
-            echo "<script>alert('Reserva enviada'); window.location.href='index.php';</script>";
+            echo "<script>alert('¡Tu mesa ha sido reservada con éxito!'); window.location.href='index.php';</script>";
             return;
         }
         require_once __DIR__ . '/../Views/reservations.php';

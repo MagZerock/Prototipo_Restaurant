@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Models\Dish;
+use App\Models\OrderDetail;
 
 class CartController {
     public function index() {
@@ -9,35 +10,52 @@ class CartController {
         require_once __DIR__ . '/../Views/cart.php';
     }
 
+    /**
+     * Lógica del Carrito: Recibe item_id, busca con Eloquent y guarda en sesión.
+     */
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'];
-            $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
-            
-            $dishes = Dish::getAll();
-            $dish = null;
-            foreach ($dishes as $d) {
-                if ((string)$d['id'] === (string)$id) {
-                    $dish = $d;
-                    break;
-                }
-            }
+            try {
+                $id = $_POST['id'];
+                $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
+                
+                // Buscamos el plato con sus ingredientes usando Eloquent
+                $dish = Dish::where('item_id', $id)->first();
 
-            if ($dish) {
-                if (!isset($_SESSION['cart'])) {
-                    $_SESSION['cart'] = [];
-                }
+                if ($dish) {
+                    if (!isset($_SESSION['cart'])) {
+                        $_SESSION['cart'] = [];
+                    }
 
-                if (isset($_SESSION['cart'][$id])) {
-                    $_SESSION['cart'][$id]['quantity'] += $quantity;
-                } else {
+                    // Calculamos la nueva cantidad
+                    $newQuantity = isset($_SESSION['cart'][$id]) ? $_SESSION['cart'][$id]['quantity'] + $quantity : $quantity;
+
+                    // Instancia temporal para calcular costos según la lógica del modelo
+                    $tempDetail = new OrderDetail([
+                        'item_id' => $dish->item_id,
+                        'quantity' => $newQuantity,
+                        'selling_price' => (float)$dish->price
+                    ]);
+                    
+                    // Vinculamos el plato manualmente para el cálculo
+                    $tempDetail->setRelation('menuItem', $dish);
+
+                    // Guardamos la representación de OrderDetail en la sesión
                     $_SESSION['cart'][$id] = [
-                        'name' => $dish['name'],
-                        'price' => $dish['price'],
-                        'quantity' => $quantity,
-                        'ingredients' => $_POST['ingredients'] ?? $dish['ingredients']
+                        'item_id' => $dish->item_id,
+                        'name' => $dish->name,
+                        'quantity' => $newQuantity,
+                        'price' => (float)$dish->price, // Para compatibilidad con vistas
+                        'selling_price' => (float)$dish->price,
+                        'ingredient_cost' => $tempDetail->calculateItemCost(),
+                        'ingredients' => $dish->ingredients->pluck('name')->toArray(),
+                        'image_url' => $dish->image_url
                     ];
                 }
+            } catch (\Exception $e) {
+                // Manejo de excepciones (Error de conexión o base de datos)
+                echo "<script>alert('Error en la base de datos: " . $e->getMessage() . "'); window.location.href='index.php?action=menu';</script>";
+                exit();
             }
         }
         header('Location: index.php?action=menu');

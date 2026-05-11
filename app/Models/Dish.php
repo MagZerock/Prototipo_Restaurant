@@ -1,45 +1,130 @@
 <?php
 namespace App\Models;
 
-class Dish {
-    private static $file = __DIR__ . '/../database/dishes.json';
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Capsule\Manager as DB;
+
+class Dish extends Model {
+    protected $table = 'menu_items';
+    protected $primaryKey = 'item_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'item_id',
+        'name',
+        'description',
+        'price',
+        'image_url',
+        'is_available'
+    ];
+
+    public function ingredients() {
+        return $this->belongsToMany(Ingredient::class, 'menu_item_ingredients', 'item_id', 'sku_code')
+                    ->withPivot('quantity_required');
+    }
 
     public static function getAll() {
-        if (!file_exists(self::$file)) {
-            // Initial mock data
-            $initial = [
-                ['id' => 1, 'name' => 'Hamburguesa Biconoir', 'description' => 'Carne premium y queso cheddar.', 'price' => 12.50, 'image' => 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500'],
-                ['id' => 2, 'name' => 'Ensalada Green', 'description' => 'Mix de lechugas y aguacate.', 'price' => 8.90, 'image' => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500']
-            ];
-            file_put_contents(self::$file, json_encode($initial));
-            return $initial;
+        $items = self::with('ingredients')
+                     ->where('is_available', true)
+                     ->orderBy('created_at', 'desc')
+                     ->get();
+        
+        $result = $items->toArray();
+        foreach ($result as &$item) {
+            $item['id'] = $item['item_id'];
+            $item['image'] = $item['image_url'];
         }
-        return json_decode(file_get_contents(self::$file), true);
+        return $result;
+    }
+
+    /**
+     * Guarda un nuevo plato y sus ingredientes con cantidades requeridas.
+     * $ingredientData: [ 'SKU1' => 0.5, 'SKU2' => 2, ... ]
+     */
+    public static function saveWithIngredients($dishData, $ingredientData) {
+        return DB::transaction(function() use ($dishData, $ingredientData) {
+            $itemId = $dishData['item_id'] ?? 'm_' . bin2hex(random_bytes(4));
+            
+            $dish = self::create([
+                'item_id' => $itemId,
+                'name' => $dishData['name'],
+                'description' => $dishData['description'],
+                'price' => $dishData['price'],
+                'image_url' => $dishData['image'] ?? $dishData['image_url'] ?? null,
+                'is_available' => $dishData['is_available'] ?? true
+            ]);
+
+            if (!empty($ingredientData)) {
+                foreach ($ingredientData as $sku => $qty) {
+                    $dish->ingredients()->attach($sku, ['quantity_required' => $qty]);
+                }
+            }
+
+            return $dish;
+        });
     }
 
     public static function add($data) {
-        $dishes = self::getAll();
-        $data['id'] = time(); // Simple unique ID
-        $dishes[] = $data;
-        file_put_contents(self::$file, json_encode($dishes));
+        return self::saveWithIngredients($data, $data['ingredients'] ?? []);
     }
 
-    public static function update($id, $data) {
-        $dishes = self::getAll();
-        $updated = false;
-        foreach ($dishes as &$dish) {
-            if ((string)$dish['id'] === (string)$id) {
-                $dish['name'] = $data['name'];
-                $dish['description'] = $data['description'];
-                $dish['price'] = (float)$data['price'];
-                $dish['image'] = $data['image'];
-                $updated = true;
-                break;
+    public static function updateDish($id, $data) {
+        $dish = self::where('item_id', $id)->first();
+        if (!$dish) return false;
+
+        $changingSensitiveData = ($dish->name !== $data['name'] || (float)$dish->price !== (float)$data['price']);
+
+        if ($changingSensitiveData && self::isUsedInActiveOrder($id)) {
+            throw new \Exception("Regla de Negocio: No se puede editar el nombre o precio de un plato con pedidos activos.");
+        }
+
+        return DB::transaction(function() use ($dish, $data) {
+            $dish->update([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'price' => $data['price'],
+                'image_url' => $data['image'] ?? $data['image_url'] ?? null,
+                'is_available' => $data['is_available'] ?? true
+            ]);
+
+            if (isset($data['ingredients'])) {
+                $syncData = [];
+                foreach ($data['ingredients'] as $sku => $qty) {
+                    $syncData[$sku] = ['quantity_required' => $qty];
+                }
+                $dish->ingredients()->sync($syncData);
             }
+
+            return true;
+        });
+    }
+
+    public static function deleteDish($id) {
+        if (self::isUsedInActiveOrder($id)) {
+            throw new \Exception("Regla de Negocio: No se puede eliminar un plato que tiene pedidos activos.");
         }
-        if ($updated) {
-            file_put_contents(self::$file, json_encode($dishes, JSON_PRETTY_PRINT));
+
+        $dish = self::where('item_id', $id)->first();
+        return $dish ? $dish->delete() : false;
+    }
+
+    public static function findDish($id) {
+        $dish = self::where('item_id', $id)->first();
+        if ($dish) {
+            $data = $dish->toArray();
+            $data['id'] = $data['item_id'];
+            $data['image'] = $data['image_url'];
+            return $data;
         }
-        return $updated;
+        return null;
+    }
+
+    private static function isUsedInActiveOrder($id) {
+        return OrderDetail::where('item_id', $id)
+            ->whereHas('order', function($query) {
+                $query->whereNotIn('status', ['Completado', 'Cancelado', 'Confirmed']);
+            })->count() > 0;
     }
 }
