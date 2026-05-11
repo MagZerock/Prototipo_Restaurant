@@ -42,6 +42,30 @@ class Dish extends Model {
     public static function saveWithIngredients($dishData, $ingredientData) {
         return DB::transaction(function() use ($dishData, $ingredientData) {
             $itemId = $dishData['item_id'] ?? 'm_' . bin2hex(random_bytes(4));
+
+            $existingDish = self::where('name', $dishData['name'])->first();
+            if ($existingDish) {
+                if ((bool)$existingDish->is_available) {
+                    throw new \Exception("Ya existe un plato activo con ese nombre.");
+                }
+
+                $existingDish->update([
+                    'description' => $dishData['description'],
+                    'price' => $dishData['price'],
+                    'image_url' => $dishData['image'] ?? $dishData['image_url'] ?? null,
+                    'is_available' => true,
+                ]);
+
+                if (!empty($ingredientData)) {
+                    $syncData = [];
+                    foreach ($ingredientData as $sku => $qty) {
+                        $syncData[$sku] = ['quantity_required' => $qty];
+                    }
+                    $existingDish->ingredients()->sync($syncData);
+                }
+
+                return $existingDish;
+            }
             
             $dish = self::create([
                 'item_id' => $itemId,
