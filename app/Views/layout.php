@@ -43,7 +43,7 @@
                                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Sesión</p>
                                 <p class="text-xs font-bold text-[#1a4731]"><?php echo strtoupper($_SESSION['user']['role']); ?></p>
                             </div>
-                            <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                            <?php if (in_array($_SESSION['user']['role'], ['admin', 'administrator'])): ?>
                                 <a href="index.php?action=admin_dashboard" class="block px-4 py-2 text-sm hover:bg-blue-50 text-blue-600 font-bold">⚙️ Gestionar</a>
                             <?php endif; ?>
                             <a href="index.php?action=logout" class="block px-4 py-2 text-sm hover:bg-red-50 text-red-500">Cerrar Sesión</a>
