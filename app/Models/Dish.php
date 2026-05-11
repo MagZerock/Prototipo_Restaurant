@@ -103,7 +103,11 @@ class Dish extends Model {
         }
 
         $dish = self::where('item_id', $id)->first();
-        return $dish ? $dish->delete() : false;
+        if (!$dish) {
+            throw new \Exception("Plato no encontrado.");
+        }
+
+        return $dish->update(['is_available' => false]);
     }
 
     public static function findDish($id) {
