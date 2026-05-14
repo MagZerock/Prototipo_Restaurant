@@ -14,7 +14,9 @@
                     <div class="flex gap-4">
                         <?php for($i=1; $i<=5; $i++): ?>
                         <label class="flex-grow cursor-pointer group text-center">
-                            <input type="radio" name="rating" value="<?php echo $i; ?>" class="hidden peer" required>
+                            <input type="radio" name="rating" value="<?php echo $i; ?>" class="hidden peer" required
+                                oninvalid="this.setCustomValidity('Debes responder a todas las preguntas')" 
+                                oninput="this.setCustomValidity('')">
                             <div class="py-3 rounded-2xl border-2 border-gray-100 peer-checked:border-[#1a4731] peer-checked:bg-green-50 peer-checked:text-[#1a4731] group-hover:bg-gray-50 transition font-bold text-gray-400">
                                 <?php echo $i; ?> ⭐
                             </div>
@@ -25,12 +27,16 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nombre</label>
-                    <input type="text" name="customer" required placeholder="Tu nombre" class="w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none bg-gray-50">
+                    <input type="text" name="customer" required placeholder="Tu nombre" class="w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none bg-gray-50"
+                        oninvalid="this.setCustomValidity('Debes responder a todas las preguntas')" 
+                        oninput="this.setCustomValidity('')">
                 </div>
                 
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Comentarios</label>
-                    <textarea name="comment" required placeholder="¿Qué fue lo que más te gustó?" class="w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none bg-gray-50 h-32"></textarea>
+                    <textarea name="comment" required placeholder="¿Qué fue lo que más te gustó?" class="w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-[#1a4731] outline-none bg-gray-50 h-32"
+                        oninvalid="this.setCustomValidity('Debes responder a todas las preguntas')" 
+                        oninput="this.setCustomValidity('')"></textarea>
                 </div>
                 
                 <button type="submit" class="w-full bg-[#1a4731] text-white py-5 rounded-2xl font-bold text-xl shadow-xl hover:bg-[#112d1f] transition">Enviar Encuesta</button>

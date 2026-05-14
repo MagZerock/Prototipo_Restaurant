@@ -166,9 +166,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (pax < 1 || pax > 20) {
+            if (pax < 1 || pax > 10) {
                 e.preventDefault();
-                alert('El número de comensales debe ser entre 1 y 20.');
+                alert('El número de personas debe ser entre 1 y 10.');
                 return;
             }
 

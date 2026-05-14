@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             } 
             
-            if (password.length < 6) {
+            if (password.length < 8) {
                 e.preventDefault();
-                alert('La contraseña debe tener al menos 6 caracteres.');
+                alert('La contraseña debe tener al menos 8 caracteres.');
                 return;
             }
 

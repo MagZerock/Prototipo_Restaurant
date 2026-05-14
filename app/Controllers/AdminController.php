@@ -18,12 +18,18 @@ class AdminController {
         
         // Lógica de filtrado de pedidos
         $orderDate = $_GET['order_date'] ?? date('Y-m-d');
+        $orderStatus = $_GET['order_status'] ?? '';
+        
         $query = Order::with(['details.menuItem']);
 
         if (!empty($orderDate)) {
             $start = strtotime($orderDate . ' 00:00:00');
             $end = strtotime($orderDate . ' 23:59:59');
             $query->whereBetween('order_date_time', [$start, $end]);
+        }
+
+        if (!empty($orderStatus)) {
+            $query->where('status', $orderStatus);
         }
         
         $ordersRaw = $query->orderBy('order_date_time', 'desc')->get();
@@ -150,5 +156,34 @@ class AdminController {
 
         $surveys = Survey::orderBy('id', 'desc')->get()->toArray();
         require_once __DIR__ . '/../Views/admin/adminsurveys.php';
+    }
+
+    public function exportOrders() {
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'administrator'])) {
+            header('Location: index.php?action=login');
+            exit();
+        }
+
+        $ordersRaw = Order::with(['details.menuItem'])->orderBy('order_date_time', 'desc')->get();
+        $orders = Order::mapCompatibility($ordersRaw);
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=pedidos_biconoir_' . date('Ymd') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['ID', 'Fecha', 'Cliente', 'Email', 'Total', 'Estado']);
+
+        foreach ($orders as $o) {
+            fputcsv($output, [
+                $o['id'],
+                $o['created_at'],
+                $o['customer_name'],
+                $o['customer_email'],
+                $o['total'],
+                $o['status']
+            ]);
+        }
+        fclose($output);
+        exit();
     }
 }

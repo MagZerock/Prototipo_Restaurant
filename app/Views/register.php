@@ -6,26 +6,40 @@
             <h2 class="text-3xl font-bold text-gray-800 uppercase tracking-tighter">Únete a Biconoir</h2>
             <p class="text-gray-400 text-sm mt-2 italic">Crea tu cuenta y empieza a disfrutar.</p>
         </div>
+
+        <?php if (isset($error)): ?>
+            <div class="bg-red-50 text-red-500 p-4 rounded-2xl mb-6 text-sm font-bold border border-red-100">
+                ⚠️ <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
         
         <form action="index.php?action=register" method="POST" class="space-y-6">
             <div>
                 <label class="form-label">Nombre Completo</label>
-                <input type="text" name="name" required placeholder="Kevin David Cevallos Vega" class="input-biconoir">
+                <input type="text" name="name" required placeholder="Kevin David Cevallos Vega" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('El nombre es obligatorio')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <div>
                 <label class="form-label">Teléfono</label>
-                <input type="tel" name="phone" required placeholder="0998877665" class="input-biconoir">
+                <input type="tel" name="phone" required placeholder="0998877665" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('El teléfono es obligatorio')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <div>
                 <label class="form-label">Correo Electrónico</label>
-                <input type="email" name="email" required placeholder="email@ejemplo.com" class="input-biconoir">
+                <input type="email" name="email" required placeholder="email@ejemplo.com" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('El correo electrónico es obligatorio')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <div>
                 <label class="form-label">Contraseña</label>
-                <input type="password" name="password" required placeholder="••••••••" class="input-biconoir">
+                <input type="password" name="password" required placeholder="••••••••" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('La contraseña es obligatoria')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <button type="submit" class="w-full btn-primary !py-4">Registrarse ahora</button>

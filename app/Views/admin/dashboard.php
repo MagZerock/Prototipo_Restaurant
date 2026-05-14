@@ -56,7 +56,8 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        </div>
+
             <section class="lg:col-span-3 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <h3 class="text-2xl font-bold text-gray-800 flex items-center">
@@ -91,17 +92,29 @@
                 </h3>
                 <div class="flex items-center gap-4">
                     <div class="bg-gray-50 p-2 rounded-xl border border-gray-100 flex items-center space-x-3">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Fecha:</label>
-                        <form action="index.php" method="GET" class="flex items-center" id="adminOrderDateForm">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Filtros:</label>
+                        <form action="index.php" method="GET" class="flex items-center gap-2" id="adminOrderFilterForm">
                             <input type="hidden" name="action" value="admin_dashboard">
                             <input type="date" name="order_date" value="<?php echo htmlspecialchars($orderDate); ?>" 
                                    class="px-3 py-1.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-700 cursor-pointer"
-                                   onchange="document.getElementById('adminOrderDateForm').submit()">
-                            <?php if (isset($_GET['order_date']) && $_GET['order_date'] !== ''): ?>
-                                <a href="index.php?action=admin_dashboard&order_date=" class="ml-2 text-[10px] text-red-400 hover:underline font-bold">Limpiar</a>
+                                   onchange="document.getElementById('adminOrderFilterForm').submit()">
+                            
+                            <select name="order_status" class="px-3 py-1.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-700 cursor-pointer"
+                                    onchange="document.getElementById('adminOrderFilterForm').submit()">
+                                <option value="">Todos los Estados</option>
+                                <option value="Pendiente" <?php echo ($orderStatus ?? '') === 'Pendiente' ? 'selected' : ''; ?>>Pendiente</option>
+                                <option value="Completado" <?php echo ($orderStatus ?? '') === 'Completado' ? 'selected' : ''; ?>>Completado</option>
+                                <option value="Cancelado" <?php echo ($orderStatus ?? '') === 'Cancelado' ? 'selected' : ''; ?>>Cancelado</option>
+                            </select>
+
+                            <?php if ((isset($_GET['order_date']) && $_GET['order_date'] !== '') || (isset($_GET['order_status']) && $_GET['order_status'] !== '')): ?>
+                                <a href="index.php?action=admin_dashboard" class="text-[10px] text-red-400 hover:underline font-bold">Limpiar</a>
                             <?php endif; ?>
                         </form>
                     </div>
+                    <a href="index.php?action=export_orders" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-green-800 transition">
+                        📥 Exportar CSV
+                    </a>
                     <input type="text" id="search_orders" placeholder="🔍 Buscar ID, cliente..." onkeyup="filterTable('search_orders', 'orders_table')" class="w-full max-w-sm px-6 py-3 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-sm focus:ring-2 focus:ring-[#1a4731] shadow-sm">
                 </div>
             </div>

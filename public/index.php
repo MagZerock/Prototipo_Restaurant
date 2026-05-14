@@ -71,6 +71,9 @@ switch ($action) {
     case 'admin_surveys':
         (new AdminController())->surveys();
         break;
+    case 'export_orders':
+        (new AdminController())->exportOrders();
+        break;
     case 'update_reservation_status':
         (new AdminController())->updateReservationStatus();
         break;

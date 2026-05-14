@@ -10,7 +10,7 @@
             <?php if (empty($cart)): ?>
                 <div class="text-center py-20">
                     <div class="text-7xl mb-6">🛒</div>
-                    <p class="text-gray-400 italic text-xl mb-10">Tu carrito está vacío. ¿Qué tal algo delicioso para empezar?</p>
+                    <p class="text-gray-400 italic text-xl mb-10">El carrito está vacío, añade platos</p>
                     <a href="index.php?action=menu" class="inline-block bg-[#1a4731] text-white px-12 py-5 rounded-2xl font-bold shadow-xl hover:bg-black transition-all">Ver el Menú</a>
                 </div>
             <?php else: ?>

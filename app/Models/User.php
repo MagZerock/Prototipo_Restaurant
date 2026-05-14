@@ -44,4 +44,8 @@ class User extends Model {
                     ->first();
         return $user ? $user->toArray() : null;
     }
+
+    public static function exists($email) {
+        return self::where('email', $email)->exists();
+    }
 }

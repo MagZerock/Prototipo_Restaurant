@@ -58,7 +58,7 @@
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">Comensales</label>
                     <div class="relative">
-                        <input type="number" name="pax" required min="1" max="20" placeholder="Número de personas" 
+                        <input type="number" name="pax" required min="1" max="10" placeholder="Número de personas" 
                             class="w-full px-8 py-5 bg-gray-50 border-0 rounded-[2rem] focus:ring-2 focus:ring-[#1a4731] outline-none text-gray-700 transition-all shadow-inner">
                         <span class="absolute right-8 top-1/2 -translate-y-1/2 text-gray-300 font-bold">Pax</span>
                     </div>

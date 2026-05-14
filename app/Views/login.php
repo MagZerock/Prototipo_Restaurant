@@ -18,12 +18,16 @@
         <form action="index.php?action=login" method="POST" class="space-y-6">
             <div>
                 <label class="form-label">Correo Electrónico</label>
-                <input type="email" name="email" required placeholder="email@ejemplo.com" class="input-biconoir">
+                <input type="email" name="email" required placeholder="email@ejemplo.com" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('El correo electrónico es obligatorio')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <div>
                 <label class="form-label">Contraseña</label>
-                <input type="password" name="password" required placeholder="••••••••" class="input-biconoir">
+                <input type="password" name="password" required placeholder="••••••••" class="input-biconoir"
+                    oninvalid="this.setCustomValidity('La contraseña es obligatoria')" 
+                    oninput="this.setCustomValidity('')">
             </div>
             
             <button type="submit" class="w-full btn-primary !py-4">Entrar al sistema</button>

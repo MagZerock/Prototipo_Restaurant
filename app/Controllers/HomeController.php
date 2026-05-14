@@ -107,7 +107,7 @@ class HomeController {
                 'rating' => (int)$_POST['rating'],
                 'comment' => $_POST['comment']
             ]);
-            echo "<script>alert('¡Gracias por tu feedback!'); window.location.href='index.php';</script>";
+            echo "<script>alert('Encuesta enviada con éxito'); window.location.href='index.php';</script>";
             return;
         }
         require_once __DIR__ . '/../Views/survey.php';
