@@ -15,8 +15,20 @@ class AdminController {
 
         $dishes = Dish::getAll();
         $reservations = Reservation::getAll();
-        $surveys = Survey::getAll();
-        $orders = Order::getAll();
+        
+        // Lógica de filtrado de pedidos
+        $orderDate = $_GET['order_date'] ?? date('Y-m-d');
+        $query = Order::with(['details.menuItem']);
+
+        if (!empty($orderDate)) {
+            $start = strtotime($orderDate . ' 00:00:00');
+            $end = strtotime($orderDate . ' 23:59:59');
+            $query->whereBetween('order_date_time', [$start, $end]);
+        }
+        
+        $ordersRaw = $query->orderBy('order_date_time', 'desc')->get();
+        $orders = Order::mapCompatibility($ordersRaw);
+        
         $ingredients = \App\Models\Ingredient::getAll();
 
         require_once __DIR__ . '/../Views/admin/dashboard.php';
@@ -88,5 +100,55 @@ class AdminController {
         }
         header('Location: index.php?action=admin_dashboard');
         exit();
+    }
+
+    public function reservations() {
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'administrator'])) {
+            header('Location: index.php?action=login');
+            exit();
+        }
+
+        $dateFilter = $_GET['date'] ?? null;
+        
+        if ($dateFilter) {
+            $reservations = Reservation::with('user')->where('date', $dateFilter)->orderBy('time', 'asc')->get()->toArray();
+        } else {
+            $reservations = Reservation::with('user')->orderBy('date', 'asc')->orderBy('time', 'asc')->get()->toArray();
+        }
+
+        require_once __DIR__ . '/../Views/admin/adminreservations.php';
+    }
+
+    public function updateReservationStatus() {
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'administrator'])) {
+            header('Location: index.php?action=login');
+            exit();
+        }
+
+        if (isset($_GET['id']) && isset($_GET['status'])) {
+            $reservation = Reservation::find($_GET['id']);
+            if ($reservation) {
+                $reservation->status = $_GET['status'];
+                $reservation->save();
+            }
+        }
+        
+        $redirectUrl = 'index.php?action=admin_reservations';
+        if (isset($_GET['date'])) {
+            $redirectUrl .= '&date=' . $_GET['date'];
+        }
+        
+        header('Location: ' . $redirectUrl);
+        exit();
+    }
+
+    public function surveys() {
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'administrator'])) {
+            header('Location: index.php?action=login');
+            exit();
+        }
+
+        $surveys = Survey::orderBy('id', 'desc')->get()->toArray();
+        require_once __DIR__ . '/../Views/admin/adminsurveys.php';
     }
 }

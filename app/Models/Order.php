@@ -116,16 +116,22 @@ class Order extends Model {
         }
     }
 
-    public static function getUserHistory($email) {
-        $orders = self::where('customer_email', $email)
-                      ->with(['details.menuItem'])
-                      ->orderBy('created_at', 'desc')
-                      ->get();
+    public static function getUserHistory($email, $date = null) {
+        $query = self::where('customer_email', $email)
+                      ->with(['details.menuItem']);
+        
+        if ($date) {
+            $start = strtotime($date . ' 00:00:00');
+            $end = strtotime($date . ' 23:59:59');
+            $query->whereBetween('order_date_time', [$start, $end]);
+        }
+
+        $orders = $query->orderBy('order_date_time', 'desc')->get();
         
         return self::mapCompatibility($orders);
     }
 
-    private static function mapCompatibility($orders) {
+    public static function mapCompatibility($orders) {
         if (!$orders) return [];
         
         $result = [];
@@ -134,6 +140,7 @@ class Order extends Model {
             $o['id'] = $order->order_id;
             $o['total'] = $order->total_amount;
             $o['items'] = [];
+            $o['created_at'] = date('d/m/Y H:i', $order->order_date_time);
 
             if ($order->details) {
                 foreach ($order->details as $detail) {

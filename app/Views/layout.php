@@ -68,5 +68,8 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/reservation.js"></script>
+    <script src="js/survey.js"></script>
 </body>
 </html>

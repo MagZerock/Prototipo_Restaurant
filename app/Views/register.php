@@ -10,7 +10,12 @@
         <form action="index.php?action=register" method="POST" class="space-y-6">
             <div>
                 <label class="form-label">Nombre Completo</label>
-                <input type="text" name="name" required placeholder="Tu nombre" class="input-biconoir">
+                <input type="text" name="name" required placeholder="Kevin David Cevallos Vega" class="input-biconoir">
+            </div>
+            
+            <div>
+                <label class="form-label">Teléfono</label>
+                <input type="tel" name="phone" required placeholder="0998877665" class="input-biconoir">
             </div>
             
             <div>

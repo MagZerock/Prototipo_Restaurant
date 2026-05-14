@@ -18,8 +18,14 @@
             <a href="index.php?action=admin_dashboard" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
                 <span>📊</span> <span class="font-bold">Panel Principal</span>
             </a>
+            <a href="index.php?action=admin_reservations" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
+                <span>📅</span> <span class="font-bold">Reservas</span>
+            </a>
             <a href="index.php?action=inventory" class="flex items-center space-x-3 text-white bg-green-900/50 p-4 rounded-xl transition">
                 <span>📦</span> <span class="font-bold">Inventario</span>
+            </a>
+            <a href="index.php?action=admin_surveys" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
+                <span>📝</span> <span class="font-bold">Encuestas</span>
             </a>
         </nav>
         <div class="p-8 border-t border-green-800">
@@ -38,8 +44,12 @@
             </button>
         </div>
 
-        <div class="bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
-            <table class="w-full text-left">
+        <div class="flex justify-between items-center mb-6 gap-4">
+            <input type="text" id="search_inventory" placeholder="🔍 Buscar ingrediente o SKU..." onkeyup="filterTable('search_inventory', 'inventory_table')" class="w-full max-w-md px-6 py-3 bg-white border border-gray-200 rounded-2xl outline-none text-sm focus:ring-2 focus:ring-[#1a4731] shadow-sm">
+        </div>
+
+        <div class="bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100 overflow-y-auto max-h-[600px]">
+            <table class="w-full text-left" id="inventory_table">
                 <thead>
                     <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
                         <th class="pb-4 px-4">Ingrediente / SKU</th>
@@ -72,7 +82,7 @@
                             <td class="py-6 px-4">
                                 <div class="flex justify-center space-x-2">
                                     <button onclick="openEditIngredientModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition shadow-sm">✏️</button>
-                                    <a href="index.php?action=delete_ingredient&sku=<?php echo $item['sku_code']; ?>" onclick="return confirm('¿Eliminar este ingrediente?')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">🗑️</a>
+                                    <button onclick="confirmDeleteIngredient('<?php echo $item['sku_code']; ?>')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">🗑️</button>
                                 </div>
                             </td>
                         </tr>
@@ -108,11 +118,11 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-2 block">Cantidad</label>
-                        <input type="number" step="0.01" name="quantity" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none">
+                        <input type="number" step="0.01" min="0" name="quantity" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-2 block">Costo Unitario</label>
-                        <input type="number" step="0.01" name="cost_per_unit" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none">
+                        <input type="number" step="0.01" min="0" name="cost_per_unit" required class="w-full px-6 py-4 bg-gray-50 border-0 rounded-2xl outline-none">
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-[#1a4731] text-white py-5 rounded-3xl font-bold text-xl shadow-2xl hover:bg-black transition-all transform active:scale-95">Ingresar Lote</button>
@@ -149,7 +159,7 @@
 
                     <div class="col-span-2 bg-blue-50 p-6 rounded-3xl border border-blue-100">
                         <label class="text-[10px] font-bold text-blue-400 uppercase tracking-widest px-2 mb-2 block">Nuevo Stock Total (Ajuste)</label>
-                        <input type="number" step="0.01" name="total_stock" id="edit_total_stock" required class="w-full px-6 py-4 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none shadow-sm">
+                        <input type="number" step="0.01" min="0" name="total_stock" id="edit_total_stock" required class="w-full px-6 py-4 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none shadow-sm">
                         <p class="text-[10px] text-blue-400 mt-2 italic">* El sistema creará un lote de ajuste para alcanzar esta cifra.</p>
                     </div>
                 </div>
@@ -163,5 +173,7 @@
         const ingredientsData = <?php echo json_encode($ingredients); ?>;
     </script>
     <script src="js/inventory.js"></script>
+    <script src="js/ingredient.js"></script>
+    <script src="js/inventorybatch.js"></script>
 </body>
 </html>

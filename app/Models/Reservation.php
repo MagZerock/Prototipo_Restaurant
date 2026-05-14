@@ -35,4 +35,8 @@ class Reservation extends Model {
             'notes' => $data['notes'] ?? $data['type'] ?? ''
         ]);
     }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'customer_id', 'user_id');
+    }
 }

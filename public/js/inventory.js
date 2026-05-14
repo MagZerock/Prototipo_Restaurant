@@ -19,3 +19,26 @@ function openEditIngredientModal(item) {
     document.getElementById('edit_total_stock').value = item.total_stock;
     document.getElementById('modal_edit_ingredient').classList.remove('hidden');
 }
+
+function filterTable(inputId, tableId) {
+    const input = document.getElementById(inputId);
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const trs = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    
+    for (let i = 0; i < trs.length; i++) {
+        let rowText = trs[i].textContent || trs[i].innerText;
+        if (rowText.toLowerCase().indexOf(filter) > -1) {
+            trs[i].style.display = "";
+        } else {
+            trs[i].style.display = "none";
+        }
+    }
+}
+
+function confirmDeleteIngredient(sku) {
+    if (confirm('¿Estás seguro de que deseas eliminar este ingrediente? Esta acción no se puede deshacer.')) {
+        window.location.href = 'index.php?action=delete_ingredient&sku=' + sku;
+    }
+}

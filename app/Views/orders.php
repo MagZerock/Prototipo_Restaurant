@@ -5,15 +5,30 @@
         <div class="bg-white rounded-[3rem] shadow-2xl p-12 border border-gray-100 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-3 bg-[#1a4731]"></div>
             
-            <h1 class="text-5xl font-bold text-gray-800 tracking-tighter uppercase mb-12">Mis Pedidos</h1>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                <h1 class="text-5xl font-bold text-gray-800 tracking-tighter uppercase">Mis Pedidos</h1>
+                
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center space-x-4">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Filtrar por fecha:</label>
+                    <form action="index.php" method="GET" class="flex items-center" id="userOrderDateForm">
+                        <input type="hidden" name="action" value="orders">
+                        <input type="date" name="date" value="<?php echo htmlspecialchars($_GET['date'] ?? ''); ?>" 
+                               class="px-4 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm font-bold text-gray-700 cursor-pointer"
+                               onchange="document.getElementById('userOrderDateForm').submit()">
+                        <?php if (isset($_GET['date']) && !empty($_GET['date'])): ?>
+                            <a href="index.php?action=orders" class="ml-2 text-xs text-red-400 hover:underline">Limpiar</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
             
             <?php if (empty($orders)): ?>
                 <div class="text-center py-20">
-                    <p class="text-gray-400 italic text-xl mb-10">Aún no has realizado ningún pedido.</p>
+                    <p class="text-gray-400 italic text-xl mb-10">No se encontraron pedidos para esta fecha.</p>
                     <a href="index.php?action=menu" class="btn-primary">Ir al Menú</a>
                 </div>
             <?php else: ?>
-                <div class="space-y-10">
+                <div class="space-y-10 overflow-y-auto max-h-[700px] pr-4">
                     <?php foreach (array_reverse($orders) as $order): ?>
                         <div class="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 hover:border-green-200 transition-all">
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

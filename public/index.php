@@ -65,6 +65,18 @@ switch ($action) {
     case 'update_order_status':
         (new AdminController())->updateOrderStatus();
         break;
+    case 'admin_reservations':
+        (new AdminController())->reservations();
+        break;
+    case 'admin_surveys':
+        (new AdminController())->surveys();
+        break;
+    case 'update_reservation_status':
+        (new AdminController())->updateReservationStatus();
+        break;
+    case 'cancel_reservation':
+        (new HomeController())->cancelReservation();
+        break;
     case 'inventory':
         (new \App\Controllers\InventoryController())->index();
         break;
@@ -104,7 +116,8 @@ switch ($action) {
             header('Location: index.php?action=login');
             exit();
         }
-        $orders = \App\Models\Order::getUserHistory($_SESSION['user']['email']);
+        $orderDate = $_GET['date'] ?? null;
+        $orders = \App\Models\Order::getUserHistory($_SESSION['user']['email'], $orderDate);
         require_once __DIR__ . '/../app/Views/orders.php';
         break;
     default:

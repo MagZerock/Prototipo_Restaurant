@@ -21,8 +21,14 @@
             <a href="index.php?action=admin_dashboard" class="flex items-center space-x-3 text-white bg-green-900/50 p-4 rounded-xl transition">
                 <span>📊</span> <span class="font-bold">Panel Principal</span>
             </a>
+            <a href="index.php?action=admin_reservations" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
+                <span>📅</span> <span class="font-bold">Reservas</span>
+            </a>
             <a href="index.php?action=inventory" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
                 <span>📦</span> <span class="font-bold">Inventario</span>
+            </a>
+            <a href="index.php?action=admin_surveys" class="flex items-center space-x-3 text-green-100 hover:text-white transition">
+                <span>📝</span> <span class="font-bold">Encuestas</span>
             </a>
             <div class="pt-4 border-t border-green-800">
                 <p class="text-[10px] text-green-500 font-bold uppercase mb-4">Métricas</p>
@@ -51,11 +57,14 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <section class="lg:col-span-2 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
-                <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                    <span class="mr-3">🍽️</span> Gestión del Menú
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section class="lg:col-span-3 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <span class="mr-3">🍽️</span> Gestión del Menú
+                    </h3>
+                    <input type="text" id="search_menu" placeholder="🔍 Buscar plato..." onkeyup="filterGrid('search_menu', 'menu_grid')" class="w-full max-w-sm px-6 py-3 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-sm focus:ring-2 focus:ring-[#1a4731] shadow-sm">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[600px] overflow-y-auto p-2" id="menu_grid">
                     <?php foreach ($dishes as $dish): ?>
                         <div class="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] border border-transparent hover:border-green-200 transition-all group">
                             <div class="flex items-center space-x-4">
@@ -67,36 +76,37 @@
                             </div>
                             <div class="flex space-x-2">
                                 <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($dish)); ?>)" class="bg-white p-3 rounded-xl shadow-md text-blue-600 hover:bg-blue-600 hover:text-white transition-all">✏️</button>
-                                <a href="index.php?action=delete_dish&id=<?php echo $dish['id']; ?>" onclick="return confirm('¿Eliminar este plato?')" class="bg-white p-3 rounded-xl shadow-md text-red-600 hover:bg-red-600 hover:text-white transition-all">🗑️</a>
+                                <button onclick="confirmDeleteDish('<?php echo $dish['id']; ?>')" class="bg-white p-3 rounded-xl shadow-md text-red-600 hover:bg-red-600 hover:text-white transition-all">🗑️</button>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
             </section>
-
-            <div class="space-y-10">
-                <section class="bg-white rounded-[3rem] shadow-2xl p-8 border border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <span class="mr-3 text-2xl">📅</span> Reservas
-                    </h3>
-                    <div class="space-y-4">
-                        <?php foreach (array_reverse($reservations) as $r): ?>
-                            <div class="p-4 border-l-4 border-green-500 bg-green-50/50 rounded-r-2xl">
-                                <p class="font-bold text-gray-800 text-sm"><?php echo $r['customer_id']; ?></p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1"><?php echo $r['date']; ?> | Pax: <?php echo $r['number_of_people']; ?></p>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </section>
-            </div>
         </div>
 
         <section class="mt-12 bg-white rounded-[3rem] shadow-2xl p-10 border border-gray-100">
-            <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                <span class="mr-3">🛍️</span> Gestión de Pedidos
-            </h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <span class="mr-3">🛍️</span> Gestión de Pedidos
+                </h3>
+                <div class="flex items-center gap-4">
+                    <div class="bg-gray-50 p-2 rounded-xl border border-gray-100 flex items-center space-x-3">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Fecha:</label>
+                        <form action="index.php" method="GET" class="flex items-center" id="adminOrderDateForm">
+                            <input type="hidden" name="action" value="admin_dashboard">
+                            <input type="date" name="order_date" value="<?php echo htmlspecialchars($orderDate); ?>" 
+                                   class="px-3 py-1.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-700 cursor-pointer"
+                                   onchange="document.getElementById('adminOrderDateForm').submit()">
+                            <?php if (isset($_GET['order_date']) && $_GET['order_date'] !== ''): ?>
+                                <a href="index.php?action=admin_dashboard&order_date=" class="ml-2 text-[10px] text-red-400 hover:underline font-bold">Limpiar</a>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+                    <input type="text" id="search_orders" placeholder="🔍 Buscar ID, cliente..." onkeyup="filterTable('search_orders', 'orders_table')" class="w-full max-w-sm px-6 py-3 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-sm focus:ring-2 focus:ring-[#1a4731] shadow-sm">
+                </div>
+            </div>
+            <div class="overflow-y-auto max-h-[600px]">
+                <table class="w-full text-left" id="orders_table">
                     <thead>
                         <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
                             <th class="pb-4 px-4">ID</th>
@@ -128,8 +138,8 @@
                                     <span class="px-4 py-1 rounded-full text-[10px] font-bold uppercase <?php echo $o['status'] === 'Completado' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-green-50 text-[#1a4731] border-green-100'; ?> border"><?php echo $o['status']; ?></span>
                                 </td>
                                 <td class="py-6 px-4 flex justify-center gap-2">
-                                    <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Completado" class="p-2 bg-gray-100 rounded-lg hover:bg-green-600 hover:text-white transition" title="Marcar como Completado (Descuenta Stock)">✅</a>
-                                    <a href="index.php?action=update_order_status&id=<?php echo $o['id']; ?>&status=Cancelado" class="p-2 bg-gray-100 rounded-lg hover:bg-red-600 hover:text-white transition" title="Cancelar">❌</a>
+                                    <button onclick="confirmUpdateOrderStatus('<?php echo $o['id']; ?>', 'Completado')" class="p-2 bg-gray-100 rounded-lg hover:bg-green-600 hover:text-white transition" title="Marcar como Completado (Descuenta Stock)">✅</button>
+                                    <button onclick="confirmUpdateOrderStatus('<?php echo $o['id']; ?>', 'Cancelado')" class="p-2 bg-gray-100 rounded-lg hover:bg-red-600 hover:text-white transition" title="Cancelar">❌</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -152,15 +162,16 @@
                 </div>
                 <div class="space-y-4">
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2">Composición e Inventario</p>
-                    <div class="space-y-2 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <input type="text" id="search_add_ingredients" placeholder="🔍 Buscar ingrediente..." onkeyup="filterIngredients('add')" class="w-full px-4 py-2 bg-white border border-gray-200 rounded-xl outline-none text-xs focus:ring-1 focus:ring-[#1a4731]">
+                    <div id="list_add_ingredients" class="space-y-2 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
                         <?php foreach ($ingredients as $ing): ?>
-                            <div class="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm">
+                            <div class="ingredient-item flex items-center justify-between p-3 bg-white rounded-xl shadow-sm" data-name="<?php echo strtolower($ing['name']); ?>">
                                 <label class="flex items-center space-x-3 cursor-pointer">
                                     <input type="checkbox" name="ingredients[<?php echo $ing['sku_code']; ?>][selected]" value="1" class="w-4 h-4 rounded border-gray-300 text-[#1a4731]">
                                     <span class="text-xs font-bold text-gray-700"><?php echo $ing['name']; ?></span>
                                 </label>
                                 <div class="flex items-center space-x-2">
-                                    <input type="number" step="0.01" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" placeholder="Cant." class="w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
+                                    <input type="number" step="0.01" min="0" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" placeholder="Cant." class="qty-input w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
                                     <span class="text-[10px] text-gray-400 font-bold uppercase"><?php echo $ing['unit_of_measurement']; ?></span>
                                 </div>
                             </div>
@@ -186,15 +197,16 @@
                 </div>
                 <div class="space-y-4">
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2">Composición e Inventario</p>
+                    <input type="text" id="search_edit_ingredients" placeholder="🔍 Buscar ingrediente..." onkeyup="filterIngredients('edit')" class="w-full px-4 py-2 bg-white border border-gray-200 rounded-xl outline-none text-xs focus:ring-1 focus:ring-blue-600">
                     <div id="edit_ingredients_container" class="space-y-2 max-h-80 overflow-y-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
                         <?php foreach ($ingredients as $ing): ?>
-                            <div class="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm">
+                            <div class="ingredient-item flex items-center justify-between p-3 bg-white rounded-xl shadow-sm" data-name="<?php echo strtolower($ing['name']); ?>">
                                 <label class="flex items-center space-x-3 cursor-pointer">
                                     <input type="checkbox" name="ingredients[<?php echo $ing['sku_code']; ?>][selected]" value="1" data-sku="<?php echo $ing['sku_code']; ?>" class="w-4 h-4 rounded border-gray-300 text-blue-600">
                                     <span class="text-xs font-bold text-gray-700"><?php echo $ing['name']; ?></span>
                                 </label>
                                 <div class="flex items-center space-x-2">
-                                    <input type="number" step="0.01" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" data-qty-sku="<?php echo $ing['sku_code']; ?>" class="w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
+                                    <input type="number" step="0.01" min="0" name="ingredients[<?php echo $ing['sku_code']; ?>][quantity]" data-qty-sku="<?php echo $ing['sku_code']; ?>" class="qty-input w-20 px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs outline-none">
                                     <span class="text-[10px] text-gray-400 font-bold uppercase"><?php echo $ing['unit_of_measurement']; ?></span>
                                 </div>
                             </div>
@@ -206,6 +218,9 @@
         </div>
     </div>
 
+
     <script src="js/main.js"></script>
+    <script src="js/dish.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
